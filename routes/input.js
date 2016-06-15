@@ -1,7 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var LookupsClient = require('twilio').LookupsClient;
-var client = new LookupsClient(process.env['TWILIO_SID'], process.env['TWILIO_AUTH']);
+var RestClient = require('twilio').RestClient;
+
+var twilioLookUpClient = new LookupsClient(process.env['TWILIO_SID'], process.env['TWILIO_AUTH']);
+var twilioRestClient = new RestClient(process.env['TWILIO_SID'], process.env['TWILIO_AUTH']);
+
+
 var base64 = {
   encode: function(unencoded) {
     return new Buffer(unencoded).toString('base64');
@@ -15,7 +20,7 @@ var base64 = {
 Uses white pages to get callers information
 */
 var callerId = function(phoneNumber, callback) {
-  client.phoneNumbers(phoneNumber).get({
+  twilioLookUpClient.phoneNumbers(phoneNumber).get({
     type: 'carrier',
     addOns: 'whitepages_pro_caller_id'
   }, function(error, number) {
@@ -120,8 +125,38 @@ router.post('/', function(req, res, next) {
     } else {
       saveActivation(question, function(error, response) {
         if(error) return res.status(500).json({error:error});
-        
-        res.status(200).json({response:"Activation Saved"});
+
+
+        twilioRestClient.sms.messages.create({
+          to:question.fromPhoneNumber,
+          from:'+1386-267-6604',
+          body:'Your ticket has been activated. Text your questions for the panelists to this phone number. Thank you.'
+        }, function(error, message) {
+          // The HTTP request to Twilio will run asynchronously. This callback
+          // function will be called when a response is received from Twilio
+          // The "error" variable will contain error information, if any.
+          // If the request was successful, this value will be "falsy"
+          if (!error) {
+            // The second argument to the callback will contain the information
+            // sent back by Twilio for the request. In this case, it is the
+            // information about the text messsage you just sent:
+            console.log('Success! The SID for this SMS message is:');
+            console.log(message.sid);
+
+            console.log('Message sent on:');
+            console.log(message.dateCreated);
+          } else {
+            console.log('Oops! There was an error.');
+          }
+          res.status(200).json({response:"Activation Saved"});
+
+        });
+
+
+
+
+
+
       });
     }
 
