@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: ''
+    destination: /home/ubuntu/app/qa
+hooks:
+   BeforeInstall:
+     - location: beforeInstall.sh
+       timeout: 1080
+       runas: root
+   ApplicationStart:
+     - location: applicationStart.sh
+       timeout: 1080
+       runas: root
