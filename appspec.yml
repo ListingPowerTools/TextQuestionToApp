@@ -8,7 +8,7 @@ hooks:
      - location: beforeInstall.sh
        timeout: 1080
        runas: root
-   ApplicationStart:
-     - location: applicationStart.sh
+   AfterInstall:
+     - location: AfterInstall.sh
        timeout: 1080
        runas: root
