@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.js" integrity="sha256-0vBSIAi/8FxkNOSKyPEfdGQzFDak1dlqFKBYqBp1yC4=" crossorigin="anonymous"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    
+    <script>
+var decodeBase64 = function(s) {
+    var e={},i,b=0,c,x,l=0,a,r='',w=String.fromCharCode,L=s.length;
+    var A="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    for(i=0;i<64;i++){e[A.charAt(i)]=i;}
+    for(x=0;x<L;x++){
+        c=e[s.charAt(x)];b=(b<<6)+c;l+=6;
+        while(l>=8){((a=(b>>>(l-=8))&0xff)||(x<(L-2)))&&(r+=w(a));}
+    }
+    return r;
+};
+var handleData = function(data) {
+
+    $("table.questions tbody tr").remove();
+
+    $(data).each(function(index) {
+        var r = data[index];
+        data[index].firstName = " - ";
+        data[index].lastName = " - ";
+
+        if (r.callerIdRaw) {
+          try{
+            data[index].callerIdRaw = JSON.parse(atob(r.callerIdRaw));
+            data[index].firstName = data[index].callerIdRaw[0].belongs_to[0].names[0].firstName
+            data[index].lastName = data[index].callerIdRaw[0].belongs_to[0].names[0].lastName
+          }catch(e){
+            
+          }
+        }
+
+    });
+     data.reverse();
+    $(data).each(function(index) {
+        var name = data[index].firstName + " " + data[index].lastName;
+        var location = data[index].city + " " + data[index].state;
+        var from = data[index].fromPhoneNumber;
+        var text = data[index].text;
+        console.log(data[index]);
+        $("table.questions tbody").prepend("<tr><td>" + text + "</td><td>" + from + "</td><td>" + name + "</td><td>" + location + "</td></tr>")
+    });
+}
+
+var pull = function() {
+    $.ajax({
+        method: "GET",
+        url: "/input",
+        success: function(data) {
+            handleData(data);
+        }
+    });
+}
+
+setInterval(pull, 6000)
+   
+  </script>
+    
+  </head>
+  <body>
+    <h1>Text Questions to <%= phoneNumber %> </h1>
+    <small>Refreshes every 6 seconds</small>
+    <table class="questions table table-striped" style="width:100%">
+      <thead>
+      <th>Question</th>
+        <th>Phone Number</th>
+         <th>Name</th>
+         <th>Location</th>
+      </thead>
+      <tbody>
+      </tbody>
+      
+      
+    </table>
+   
+  </body>
+</html>
