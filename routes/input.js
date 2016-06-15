@@ -129,7 +129,7 @@ router.post('/', function(req, res, next) {
 
         twilioRestClient.sms.messages.create({
           to:question.fromPhoneNumber,
-          from:'+1386-267-6604',
+          from:'+13862676604',
           body:'Your ticket has been activated. Text your questions for the panelists to this phone number. Thank you.'
         }, function(error, message) {
           // The HTTP request to Twilio will run asynchronously. This callback
@@ -146,7 +146,7 @@ router.post('/', function(req, res, next) {
             console.log('Message sent on:');
             console.log(message.dateCreated);
           } else {
-            console.log('Oops! There was an error.');
+            console.log('Oops! There was an error.',error);
           }
           res.status(200).json({response:"Activation Saved"});
 
