@@ -9,6 +9,6 @@ hooks:
        timeout: 1080
        runas: root
    AfterInstall:
-     - location: AfterInstall.sh
+     - location: afterInstall.sh
        timeout: 1080
        runas: root
