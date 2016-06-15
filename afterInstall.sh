@@ -1,4 +1,6 @@
 #!/bin/bash
+/usr/bin/pm2 delete all
 cd /home/ubuntu/app/qa
 /usr/bin/npm install
-/usr/bin/pm2 restart all
+cd /home/ubuntu/app/qa/bin
+/usr/bin/pm2 start www
